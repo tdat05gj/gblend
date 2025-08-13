@@ -39,6 +39,34 @@ export class Web3Service {
     this.signer = null;
     this.contract = null;
     this.account = null;
+    
+    // Listen for network changes
+    if (typeof window !== 'undefined' && window.ethereum) {
+      window.ethereum.on('chainChanged', this.handleChainChanged.bind(this));
+      window.ethereum.on('accountsChanged', this.handleAccountsChanged.bind(this));
+    }
+  }
+
+  handleChainChanged(chainId) {
+    console.log('Network changed to:', chainId);
+    // Reload the page when network changes to ensure clean state
+    window.location.reload();
+  }
+
+  handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+      console.log('No accounts found. Please connect to MetaMask.');
+      // Handle disconnection
+      this.account = null;
+      this.provider = null;
+      this.signer = null;
+      this.contract = null;
+    } else if (accounts[0] !== this.account) {
+      console.log('Account changed to:', accounts[0]);
+      this.account = accounts[0];
+      // Reinitialize with new account
+      this.initializeContract();
+    }
   }
 
   async connectWallet() {
@@ -51,19 +79,30 @@ export class Web3Service {
         
         this.account = accounts[0];
         
-        // Add Gblend Testnet if not already added
-        await this.addGblendTestnet();
-        
-        // Switch to Gblend Testnet
-        await this.switchToGblendTestnet();
-        
-        // Initialize provider
+        // Initialize provider first
         this.provider = new ethers.providers.Web3Provider(window.ethereum);
         
-        // Verify we're on the correct network
+        // Check current network
         const network = await this.provider.getNetwork();
+        
+        // If not on Gblend Testnet, try to switch
         if (network.chainId !== 20994) {
-          throw new Error(`Please switch to Gblend Testnet (Chain ID: 20994). Current network: ${network.chainId}`);
+          try {
+            // Try to switch first
+            await this.switchToGblendTestnet();
+          } catch (switchError) {
+            // If switch fails, try to add the network then switch
+            try {
+              await this.addGblendTestnet();
+              await this.switchToGblendTestnet();
+            } catch (addError) {
+              console.warn('Could not automatically switch to Gblend Testnet:', addError);
+              // Continue anyway, let user know they need to switch manually
+            }
+          }
+          
+          // Re-initialize provider after network change
+          this.provider = new ethers.providers.Web3Provider(window.ethereum);
         }
         
         // Initialize contract
@@ -85,9 +124,13 @@ export class Web3Service {
         method: 'wallet_addEthereumChain',
         params: [GBLEND_TESTNET_CONFIG],
       });
+      console.log('Successfully added Gblend Testnet');
     } catch (error) {
       console.error('Error adding Gblend Testnet:', error);
-      // Chain might already be added
+      // Chain might already be added or user rejected
+      if (error.code !== 4001) { // 4001 is user rejected
+        throw error;
+      }
     }
   }
 
@@ -97,9 +140,20 @@ export class Web3Service {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: GBLEND_TESTNET_CONFIG.chainId }],
       });
+      console.log('Successfully switched to Gblend Testnet');
     } catch (error) {
       console.error('Error switching to Gblend Testnet:', error);
-      throw error;
+      // If the chain has not been added to the wallet, add it
+      if (error.code === 4902) {
+        await this.addGblendTestnet();
+        // Try to switch again after adding
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: GBLEND_TESTNET_CONFIG.chainId }],
+        });
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -115,6 +169,13 @@ export class Web3Service {
       // Test contract connection
       const network = await this.provider.getNetwork();
       console.log('Connected to network:', network.name, 'Chain ID:', network.chainId);
+      
+      // Warn if not on correct network but still allow initialization
+      if (network.chainId !== 20994) {
+        console.warn('Warning: Not connected to Gblend Testnet. Some features may not work properly.');
+        console.warn('Please switch to Gblend Testnet (Chain ID: 20994) for full functionality.');
+      }
+      
       console.log('Contract address:', CONTRACT_ADDRESS);
       console.log('Contract initialized successfully');
       
