@@ -158,24 +158,25 @@ const PrivateChat = ({ account, userKeys }) => {
             console.log('Current user:', account);
             
             if (msg.sender.toLowerCase() === account.toLowerCase()) {
-              // Message sent by me - decrypt with receiver's public key (same as encryption key)
+              // Message sent by me - I need to decrypt it using the same key I used to encrypt it (receiver's public key)
               const receiverInfo = await web3Service.getUser(msg.receiver);
               console.log('Decrypting outgoing message with receiver public key:', receiverInfo.publicKey.substring(0, 10) + '...');
               
               decryptedContent = EncryptionService.decryptMessage(
                 msg.encryptedContent,
-                userKeys.privateKey,
-                receiverInfo.publicKey
+                receiverInfo.publicKey  // Use receiver's public key (same key used for encryption)
               );
-            } else {
-              // Message received by me - decrypt with my public key (since it was encrypted with my public key)
+            } else if (msg.receiver.toLowerCase() === account.toLowerCase()) {
+              // Message received by me - it was encrypted with my public key, so I decrypt with my public key
               console.log('Decrypting incoming message with my public key:', userKeys.publicKey.substring(0, 10) + '...');
               
               decryptedContent = EncryptionService.decryptMessage(
                 msg.encryptedContent,
-                userKeys.privateKey,
-                userKeys.publicKey
+                userKeys.publicKey  // Use my public key (key used for encryption)
               );
+            } else {
+              // Message not for me - shouldn't happen in filtered results
+              decryptedContent = '[Unable to decrypt message]';
             }
             
             console.log('Decryption result:', decryptedContent || 'FAILED');

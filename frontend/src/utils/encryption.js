@@ -28,14 +28,14 @@ export class EncryptionService {
     }
   }
 
-  // Decrypt message - receiver uses their own public key to decrypt
-  static decryptMessage(encryptedMessage, userPrivateKey, userPublicKey) {
+  // Decrypt message - use the same key that was used for encryption
+  static decryptMessage(encryptedMessage, decryptionKey) {
     try {
-      // For decryption, receiver uses their own public key (since message was encrypted with their public key)
-      const decrypted = CryptoJS.AES.decrypt(encryptedMessage, userPublicKey);
+      // For our simple symmetric encryption, use the same key for decryption
+      const decrypted = CryptoJS.AES.decrypt(encryptedMessage, decryptionKey);
       const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
       
-      console.log('Decrypting with key:', userPublicKey.substring(0, 10) + '...');
+      console.log('Decrypting with key:', decryptionKey.substring(0, 10) + '...');
       console.log('Decryption result length:', decryptedText.length);
       
       if (!decryptedText || decryptedText.length === 0) {
