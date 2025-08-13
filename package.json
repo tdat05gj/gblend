@@ -4,11 +4,11 @@
   "description": "Decentralized messaging app with encrypted chat on Gblend Testnet",
   "main": "index.js",
   "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "dev": "cd frontend && npm run dev",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy.js --network gblend",
     "test": "hardhat test",
-    "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
     "install-all": "npm install && cd frontend && npm install"
   },
   "keywords": [
