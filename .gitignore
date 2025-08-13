@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+dist/
+build/
+
+# Hardhat files
+cache/
+artifacts/
+typechain/
+deployments/
+.hardhat/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# Package manager locks (keep package-lock.json but ignore yarn.lock)
+yarn.lock
+
+# Vercel
+.vercel
+
+# Coverage
+coverage/
+
+# Misc
+*.tgz
+*.tar.gz

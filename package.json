@@ -6,19 +6,20 @@
   "scripts": {
     "build": "cd frontend && npm install && npm run build",
     "dev": "cd frontend && npm run dev",
+    "install-all": "npm install && cd frontend && npm install",
+    "cleanup": "pwsh -ExecutionPolicy Bypass -File cleanup.ps1",
     "compile": "hardhat compile",
-    "deploy": "hardhat run scripts/deploy.js --network gblend",
-    "test": "hardhat test",
-    "install-all": "npm install && cd frontend && npm install"
+    "deploy": "hardhat run scripts/deploy.js --network gblend"
   },
   "keywords": [
     "blockchain",
     "ethereum",
+    "gblend",
     "messaging",
-    "encryption",
-    "dapp"
+    "dapp",
+    "web3"
   ],
-  "author": "Your Name",
+  "author": "Gblend Team",
   "license": "MIT",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
