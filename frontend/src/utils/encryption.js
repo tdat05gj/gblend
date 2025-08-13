@@ -15,12 +15,22 @@ export class EncryptionService {
     };
   }
 
-  // Encrypt message with receiver's public key (simplified version)
-  static encryptMessage(message, receiverPublicKey) {
+  // Create shared secret from two addresses (deterministic for same pair)
+  static createSharedSecret(address1, address2) {
+    // Sort addresses to ensure same result regardless of order
+    const addresses = [address1.toLowerCase(), address2.toLowerCase()].sort();
+    return CryptoJS.SHA256(addresses.join('')).toString();
+  }
+
+  // Encrypt message using shared secret between sender and receiver
+  static encryptMessage(message, senderAddress, receiverAddress) {
     try {
-      // Use receiver's public key as encryption key
-      const encrypted = CryptoJS.AES.encrypt(message, receiverPublicKey).toString();
-      console.log('Encrypting with key:', receiverPublicKey.substring(0, 10) + '...');
+      const sharedSecret = this.createSharedSecret(senderAddress, receiverAddress);
+      const encrypted = CryptoJS.AES.encrypt(message, sharedSecret).toString();
+      
+      console.log('Encrypting message between:', senderAddress.substring(0, 6), 'and', receiverAddress.substring(0, 6));
+      console.log('Shared secret:', sharedSecret.substring(0, 10) + '...');
+      
       return encrypted;
     } catch (error) {
       console.error('Encryption error:', error);
@@ -28,14 +38,15 @@ export class EncryptionService {
     }
   }
 
-  // Decrypt message - use the same key that was used for encryption
-  static decryptMessage(encryptedMessage, decryptionKey) {
+  // Decrypt message using shared secret between sender and receiver
+  static decryptMessage(encryptedMessage, senderAddress, receiverAddress) {
     try {
-      // For our simple symmetric encryption, use the same key for decryption
-      const decrypted = CryptoJS.AES.decrypt(encryptedMessage, decryptionKey);
+      const sharedSecret = this.createSharedSecret(senderAddress, receiverAddress);
+      const decrypted = CryptoJS.AES.decrypt(encryptedMessage, sharedSecret);
       const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
       
-      console.log('Decrypting with key:', decryptionKey.substring(0, 10) + '...');
+      console.log('Decrypting message between:', senderAddress.substring(0, 6), 'and', receiverAddress.substring(0, 6));
+      console.log('Shared secret:', sharedSecret.substring(0, 10) + '...');
       console.log('Decryption result length:', decryptedText.length);
       
       if (!decryptedText || decryptedText.length === 0) {

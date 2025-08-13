@@ -157,27 +157,12 @@ const PrivateChat = ({ account, userKeys }) => {
             console.log('Processing message from:', msg.sender, 'to:', msg.receiver);
             console.log('Current user:', account);
             
-            if (msg.sender.toLowerCase() === account.toLowerCase()) {
-              // Message sent by me - I need to decrypt it using the same key I used to encrypt it (receiver's public key)
-              const receiverInfo = await web3Service.getUser(msg.receiver);
-              console.log('Decrypting outgoing message with receiver public key:', receiverInfo.publicKey.substring(0, 10) + '...');
-              
-              decryptedContent = EncryptionService.decryptMessage(
-                msg.encryptedContent,
-                receiverInfo.publicKey  // Use receiver's public key (same key used for encryption)
-              );
-            } else if (msg.receiver.toLowerCase() === account.toLowerCase()) {
-              // Message received by me - it was encrypted with my public key, so I decrypt with my public key
-              console.log('Decrypting incoming message with my public key:', userKeys.publicKey.substring(0, 10) + '...');
-              
-              decryptedContent = EncryptionService.decryptMessage(
-                msg.encryptedContent,
-                userKeys.publicKey  // Use my public key (key used for encryption)
-              );
-            } else {
-              // Message not for me - shouldn't happen in filtered results
-              decryptedContent = '[Unable to decrypt message]';
-            }
+            // Use shared secret between sender and receiver for both encryption and decryption
+            decryptedContent = EncryptionService.decryptMessage(
+              msg.encryptedContent,
+              msg.sender,
+              msg.receiver
+            );
             
             console.log('Decryption result:', decryptedContent || 'FAILED');
             
@@ -290,12 +275,12 @@ const PrivateChat = ({ account, userKeys }) => {
       }
 
       console.log('Encrypting message for recipient:', recipientAddress);
-      console.log('Recipient public key:', recipientInfo.publicKey.substring(0, 10) + '...');
       console.log('Message to encrypt:', newMessage.trim());
       
       const encryptedMessage = EncryptionService.encryptMessage(
         newMessage.trim(),
-        recipientInfo.publicKey
+        account,  // sender address
+        recipientAddress  // receiver address
       );
       
       console.log('Encrypted message:', encryptedMessage.substring(0, 50) + '...');

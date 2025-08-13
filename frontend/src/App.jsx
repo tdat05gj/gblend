@@ -159,13 +159,26 @@ function App() {
       <footer className="app-footer">
         <p>
           Built on <strong>Gblend Testnet</strong> • 
-          Chain ID: 20994 • 
+          <a 
+            href="https://testnet.gblend.xyz/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            Faucet
+          </a> • 
           <a 
             href="https://testnet.fluentscan.xyz/" 
             target="_blank" 
             rel="noopener noreferrer"
           >
             Explorer
+          </a> • 
+          <a 
+            href="https://docs.fluent.xyz/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            Docs
           </a>
         </p>
       </footer>
