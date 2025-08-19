@@ -1,0 +1,14 @@
+{
+  "name": "gblend",
+  "version": "1.0.0",
+  "description": "Gblend DApp - Decentralized Chat, Transfer & Games",
+  "scripts": {
+    "install-all": "cd frontend && npm install",
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "preview": "cd frontend && npm run preview"
+  },
+  "keywords": ["blockchain", "dapp", "ethereum", "react", "vite"],
+  "author": "tdat05gj",
+  "license": "MIT"
+}
