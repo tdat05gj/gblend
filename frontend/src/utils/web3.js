@@ -32,24 +32,23 @@ export const CONTRACT_ABI = [
 
 // Game 2048 Contract ABI
 export const GAME2048_ABI = [
-  "function submitScore(uint256 _score, string memory _playerName) external payable",
-  "function claimReward() external",
-  "function getLeaderboard(uint256 _start, uint256 _limit) external view returns (address[] memory players, uint256[] memory scores, uint256[] memory timestamps, string[] memory names)",
-  "function getPlayerRank(address _player) external view returns (uint256 rank, bool found)",
-  "function getPlayerStats(address _player) external view returns (uint256 bestScore, string memory playerName, uint256 rank, bool hasPlayed)",
+  "function submitScore(uint256 _score) external payable",
+  "function claimReward() external", 
+  "function getLeaderboard() external view returns (address[] memory players, uint256[] memory scores, uint256[] memory timestamps)",
+  "function getPlayerStats(address _player) external view returns (uint256 bestScore, uint256 lastUpdated, bool exists)",
   "function getPoolInfo() external view returns (uint256 currentPool, uint256 threshold, bool canClaim, address topPlayer)",
-  "function getLeaderboardLength() external view returns (uint256)",
-  "function GAME_FEE() external view returns (uint256)",
-  "function POOL_THRESHOLD() external view returns (uint256)",
-  "function rewardPool() external view returns (uint256)",
+  "function ENTRY_FEE() external view returns (uint256)",
+  "function CLAIM_THRESHOLD() external view returns (uint256)",
+  "function totalPool() external view returns (uint256)",
+  "function entryCount() external view returns (uint256)",
   "event ScoreSubmitted(address indexed player, uint256 score, uint256 timestamp)",
-  "event RewardClaimed(address indexed winner, uint256 amount, uint256 timestamp)",
-  "event PoolThresholdReached(uint256 poolAmount, address indexed topPlayer)"
+  "event RewardClaimed(address indexed player, uint256 amount)",
+  "event PoolReset(uint256 timestamp)"
 ];
 
 // Contract addresses (deployed on Gblend Testnet)
 const CONTRACT_ADDRESS = '0xe658d00F63Ccc52CF8EC831Dc18E2Db715510F35';
-const GAME2048_CONTRACT_ADDRESS = '0xA073E68bfC2f5C796E7842ABc3fD76E6e12A32F5';
+const GAME2048_CONTRACT_ADDRESS = '0x30C80714647f16C39C1E2ab342629AD49cd42089'; // New contract with no-duplicate logic
 
 export class Web3Service {
   constructor() {

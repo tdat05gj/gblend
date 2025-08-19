@@ -8,7 +8,18 @@
     "build": "cd frontend && npm run build",
     "preview": "cd frontend && npm run preview"
   },
-  "keywords": ["blockchain", "dapp", "ethereum", "react", "vite"],
+  "keywords": [
+    "blockchain",
+    "dapp",
+    "ethereum",
+    "react",
+    "vite"
+  ],
   "author": "tdat05gj",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "ethers": "^5.8.0",
+    "hardhat": "^2.22.15"
+  }
 }

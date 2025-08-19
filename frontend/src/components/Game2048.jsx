@@ -225,15 +225,15 @@ const Game2048 = ({ account }) => {
         await web3Service.initializeGame2048Contract();
       }
       
-      const result = await web3Service.game2048Contract.getLeaderboard(0, 10);
-      const [players, scores, timestamps, names] = result;
+      const result = await web3Service.game2048Contract.getLeaderboard();
+      const [players, scores, timestamps] = result;
       
       const formattedLeaderboard = players.map((player, index) => ({
         rank: index + 1,
         player,
         score: parseInt(scores[index].toString()),
         timestamp: parseInt(timestamps[index].toString()) * 1000,
-        name: names[index] || formatAddress(player)
+        name: formatAddress(player)
       }));
       
       setLeaderboard(formattedLeaderboard);
@@ -249,9 +249,9 @@ const Game2048 = ({ account }) => {
       const stats = await web3Service.game2048Contract.getPlayerStats(account);
       setPlayerStats({
         bestScore: parseInt(stats.bestScore.toString()),
-        playerName: stats.playerName,
-        rank: parseInt(stats.rank.toString()),
-        hasPlayed: stats.hasPlayed
+        playerName: formatAddress(account), // Use wallet address as name
+        rank: 0, // Will be calculated from leaderboard
+        hasPlayed: stats.exists
       });
     } catch (error) {
       console.error('Error loading player stats:', error);
@@ -311,11 +311,20 @@ const Game2048 = ({ account }) => {
         await web3Service.initializeGame2048Contract();
       }
       
+      // Check current best score first
+      const playerStats = await web3Service.game2048Contract.getPlayerStats(account);
+      const currentBestScore = parseInt(playerStats.bestScore);
+      
+      if (currentBestScore >= score) {
+        alert(`Your current best score is ${currentBestScore}. New score (${score}) is not better!`);
+        setIsSubmitting(false);
+        return;
+      }
+      
       const gameFee = ethers.utils.parseEther('0.0001');
-      // Use wallet address as player name
+      // New contract only needs score parameter
       const tx = await web3Service.game2048Contract.submitScore(
         score,
-        formatAddress(account), // Use formatted wallet address
         { value: gameFee }
       );
       
@@ -326,7 +335,7 @@ const Game2048 = ({ account }) => {
       await loadPlayerStats();
       await loadPoolInfo();
       
-      alert(`Score submitted successfully! Fee: 0.0001 ETH`);
+      alert(`New best score submitted successfully! Score: ${score}, Fee: 0.0001 ETH`);
     } catch (error) {
       console.error('Error submitting score:', error);
       alert('Failed to submit score: ' + error.message);
