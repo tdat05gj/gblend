@@ -16,7 +16,6 @@ const PrivateChat = ({ account, userKeys }) => {
   const [newContactNickname, setNewContactNickname] = useState('');
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [showContactList, setShowContactList] = useState(true);
-  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     loadContacts();
@@ -26,15 +25,36 @@ const PrivateChat = ({ account, userKeys }) => {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
+    scrollToTop();
   }, [filteredMessages]);
 
   useEffect(() => {
     filterMessagesForContact();
   }, [messages, selectedContact]);
 
+  // Initial scroll when component mounts
+  useEffect(() => {
+    setTimeout(() => {
+      scrollToTop();
+    }, 500);
+  }, []);
+
+  const scrollToTop = () => {
+    setTimeout(() => {
+      const messagesContainer = document.querySelector('.messages-container');
+      if (messagesContainer) {
+        messagesContainer.scrollTop = 0;
+      }
+    }, 100);
+  };
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      const messagesContainer = document.querySelector('.messages-container');
+      if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }, 100);
   };
 
   const loadContacts = () => {
@@ -113,6 +133,11 @@ const PrivateChat = ({ account, userKeys }) => {
     );
     setContacts(updatedContacts);
     saveContacts(updatedContacts);
+    
+    // Force scroll to bottom when selecting contact
+    setTimeout(() => {
+      scrollToBottom();
+    }, 200);
   };
 
   const filterMessagesForContact = () => {
@@ -154,8 +179,7 @@ const PrivateChat = ({ account, userKeys }) => {
           let decryptedContent;
           
           try {
-            console.log('Processing message from:', msg.sender, 'to:', msg.receiver);
-            console.log('Current user:', account);
+
             
             // Use shared secret between sender and receiver for both encryption and decryption
             decryptedContent = EncryptionService.decryptMessage(
@@ -164,7 +188,7 @@ const PrivateChat = ({ account, userKeys }) => {
               msg.receiver
             );
             
-            console.log('Decryption result:', decryptedContent || 'FAILED');
+
             
             if (!decryptedContent || decryptedContent === '[Unable to decrypt message]') {
               decryptedContent = '[Unable to decrypt message]';
@@ -274,8 +298,7 @@ const PrivateChat = ({ account, userKeys }) => {
         return;
       }
 
-      console.log('Encrypting message for recipient:', recipientAddress);
-      console.log('Message to encrypt:', newMessage.trim());
+
       
       const encryptedMessage = EncryptionService.encryptMessage(
         newMessage.trim(),
@@ -283,7 +306,7 @@ const PrivateChat = ({ account, userKeys }) => {
         recipientAddress  // receiver address
       );
       
-      console.log('Encrypted message:', encryptedMessage.substring(0, 50) + '...');
+
 
       await web3Service.sendPrivateMessage(recipientAddress, encryptedMessage);
       
@@ -518,19 +541,18 @@ const PrivateChat = ({ account, userKeys }) => {
                 </div>
               </div>
             ))}
-            <div ref={messagesEndRef} />
           </>
         )}
       </div>
 
       <div className="message-input-container">
-        <textarea
+        <input
+          type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Type your encrypted message..."
           className="message-input"
-          rows={2}
           maxLength={500}
         />
         <button 
@@ -538,8 +560,7 @@ const PrivateChat = ({ account, userKeys }) => {
           disabled={isSending || !newMessage.trim()}
           className="send-button private"
         >
-          <Lock size={14} />
-          <Send size={16} />
+          {isSending ? 'Sending...' : 'Send'}
         </button>
       </div>
 

@@ -19,21 +19,38 @@ export class EncryptionService {
   static createSharedSecret(address1, address2) {
     // Sort addresses to ensure same result regardless of order
     const addresses = [address1.toLowerCase(), address2.toLowerCase()].sort();
-    return CryptoJS.SHA256(addresses.join('')).toString();
+    const secret = CryptoJS.SHA256(addresses.join('')).toString();
+    
+
+    
+    return secret;
   }
 
   // Encrypt message using shared secret between sender and receiver
   static encryptMessage(message, senderAddress, receiverAddress) {
     try {
-      const sharedSecret = this.createSharedSecret(senderAddress, receiverAddress);
-      const encrypted = CryptoJS.AES.encrypt(message, sharedSecret).toString();
+      // Validate input
+      if (!message || !senderAddress || !receiverAddress) {
+        throw new Error('Invalid encryption parameters');
+      }
       
-      console.log('Encrypting message between:', senderAddress.substring(0, 6), 'and', receiverAddress.substring(0, 6));
-      console.log('Shared secret:', sharedSecret.substring(0, 10) + '...');
+      // Ensure message is a clean string
+      const cleanMessage = message.trim();
+      if (cleanMessage.length === 0) {
+        throw new Error('Empty message');
+      }
+      
+      const sharedSecret = this.createSharedSecret(senderAddress, receiverAddress);
+      const encrypted = CryptoJS.AES.encrypt(cleanMessage, sharedSecret).toString();
+      
+      // Validate encryption result
+      if (!encrypted || encrypted.length === 0) {
+        throw new Error('Encryption failed');
+      }
       
       return encrypted;
     } catch (error) {
-      console.error('Encryption error:', error);
+      console.error('❌ Encryption error:', error);
       throw new Error('Failed to encrypt message');
     }
   }
@@ -41,21 +58,47 @@ export class EncryptionService {
   // Decrypt message using shared secret between sender and receiver
   static decryptMessage(encryptedMessage, senderAddress, receiverAddress) {
     try {
+      // Validate input
+      if (!encryptedMessage || !senderAddress || !receiverAddress) {
+        return '[Unable to decrypt message]';
+      }
+
       const sharedSecret = this.createSharedSecret(senderAddress, receiverAddress);
+      
+      // Try to decrypt
       const decrypted = CryptoJS.AES.decrypt(encryptedMessage, sharedSecret);
-      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
       
-      console.log('Decrypting message between:', senderAddress.substring(0, 6), 'and', receiverAddress.substring(0, 6));
-      console.log('Shared secret:', sharedSecret.substring(0, 10) + '...');
-      console.log('Decryption result length:', decryptedText.length);
+      // Check if decryption was successful before converting to UTF-8
+      if (!decrypted || decrypted.sigBytes <= 0) {
+        return '[Unable to decrypt message]';
+      }
       
+      // Safely convert to UTF-8 with error handling
+      let decryptedText;
+      try {
+        decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      } catch (utf8Error) {
+        // If UTF-8 conversion fails, try with Latin1 encoding
+        try {
+          decryptedText = decrypted.toString(CryptoJS.enc.Latin1);
+        } catch (latinError) {
+          return '[Unable to decrypt message]';
+        }
+      }
+      
+      // Validate the result
       if (!decryptedText || decryptedText.length === 0) {
+        return '[Unable to decrypt message]';
+      }
+      
+      // Check for non-printable characters that might indicate corruption
+      if (!/^[\x20-\x7E\s]*$/.test(decryptedText)) {
         return '[Unable to decrypt message]';
       }
       
       return decryptedText;
     } catch (error) {
-      console.error('Decryption error:', error);
+      console.error('❌ Decryption error:', error);
       return '[Unable to decrypt message]';
     }
   }

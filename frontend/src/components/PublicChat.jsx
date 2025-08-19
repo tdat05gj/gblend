@@ -7,7 +7,6 @@ const PublicChat = ({ account }) => {
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     loadMessages();
@@ -16,11 +15,23 @@ const PublicChat = ({ account }) => {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
+    scrollToTop();
   }, [messages]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // Initial scroll when component mounts
+  useEffect(() => {
+    setTimeout(() => {
+      scrollToTop();
+    }, 500);
+  }, []);
+
+  const scrollToTop = () => {
+    setTimeout(() => {
+      const messagesContainer = document.querySelector('.messages-container');
+      if (messagesContainer) {
+        messagesContainer.scrollTop = 0;
+      }
+    }, 100);
   };
 
   const loadMessages = async () => {
@@ -118,27 +129,26 @@ const PublicChat = ({ account }) => {
                 </div>
               </div>
             ))}
-            <div ref={messagesEndRef} />
           </>
         )}
       </div>
 
       <div className="message-input-container">
-        <textarea
+        <input
+          type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Share your thoughts publicly... (Press Enter to send)"
           className="message-input"
-          rows={2}
           maxLength={1000}
         />
         <button 
           onClick={sendMessage}
           disabled={isSending || !newMessage.trim()}
-          className="send-button"
+          className="continue-button"
         >
-          <Send size={18} />
+          {isSending ? 'Sending...' : 'Send'}
         </button>
       </div>
 

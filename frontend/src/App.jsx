@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import WalletConnect from './components/WalletConnect';
 import PublicChat from './components/PublicChat';
 import PrivateChat from './components/PrivateChat';
+import OnChainTransfer from './components/OnChainTransfer';
+import Game2048 from './components/Game2048';
 import { KeyStorageService } from './utils/encryption';
-import { testEncryption } from './utils/debug';
-import { MessageSquare, Lock, Wallet, LogOut, Sun, Moon } from 'lucide-react';
+import { Lock, Wallet, LogOut, Sun, Moon, Send, MessageSquare, Gamepad2 } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import './components/Game2048.css';
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -33,10 +35,6 @@ function App() {
     if (savedKeys) {
       setUserKeys(savedKeys);
     }
-    
-    // Add debug function to window for testing
-    window.testEncryption = testEncryption;
-    console.log('Debug: testEncryption() function available in console');
   }, []);
 
   const handleWalletConnected = (walletAccount, registered) => {
@@ -146,13 +144,31 @@ function App() {
           <Lock size={18} />
           Private Chat
         </button>
+        <button 
+          className={`tab-button ${activeTab === 'transfer' ? 'active' : ''}`}
+          onClick={() => setActiveTab('transfer')}
+        >
+          <Send size={18} />
+          OnChain Transfer
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'game2048' ? 'active' : ''}`}
+          onClick={() => setActiveTab('game2048')}
+        >
+          <Gamepad2 size={18} />
+          2048 Game
+        </button>
       </nav>
 
       <main className="main-content">
         {activeTab === 'public' ? (
           <PublicChat account={account} />
-        ) : (
+        ) : activeTab === 'private' ? (
           <PrivateChat account={account} userKeys={userKeys} />
+        ) : activeTab === 'transfer' ? (
+          <OnChainTransfer account={account} />
+        ) : (
+          <Game2048 account={account} />
         )}
       </main>
 
