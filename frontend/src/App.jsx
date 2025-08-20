@@ -4,8 +4,10 @@ import PublicChat from './components/PublicChat';
 import PrivateChat from './components/PrivateChat';
 import OnChainTransfer from './components/OnChainTransfer';
 import Game2048 from './components/Game2048';
+import MasterMind from './components/MasterMind';
+import DiscordBinding from './components/DiscordBinding';
 import { KeyStorageService } from './utils/encryption';
-import { Lock, Wallet, LogOut, Sun, Moon, Send, MessageSquare, Gamepad2 } from 'lucide-react';
+import { Lock, Wallet, LogOut, Sun, Moon, Send, MessageSquare, Gamepad2, Brain, Link } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -158,6 +160,20 @@ function App() {
           <Gamepad2 size={18} />
           2048 Game
         </button>
+        <button 
+          className={`tab-button ${activeTab === 'mastermind' ? 'active' : ''}`}
+          onClick={() => setActiveTab('mastermind')}
+        >
+          <Brain size={18} />
+          Master Mind
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'discord' ? 'active' : ''}`}
+          onClick={() => setActiveTab('discord')}
+        >
+          <Link size={18} />
+          Discord
+        </button>
       </nav>
 
       <main className="main-content">
@@ -167,8 +183,12 @@ function App() {
           <PrivateChat account={account} userKeys={userKeys} />
         ) : activeTab === 'transfer' ? (
           <OnChainTransfer account={account} />
-        ) : (
+        ) : activeTab === 'game2048' ? (
           <Game2048 account={account} />
+        ) : activeTab === 'mastermind' ? (
+          <MasterMind account={account} />
+        ) : (
+          <DiscordBinding account={account} />
         )}
       </main>
 

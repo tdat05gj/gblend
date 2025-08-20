@@ -46,9 +46,41 @@ export const GAME2048_ABI = [
   "event PoolReset(uint256 timestamp)"
 ];
 
+// MasterMind Contract ABI
+export const MASTERMIND_ABI = [
+  "function startNewGame() external payable",
+  "function makeGuess(uint256 guess) external",
+  "function getCurrentGame(address player) external view returns (uint256 currentScore, uint256[] memory guesses, string[] memory hints, bool isCompleted, uint256 finalScore)",
+  "function getPlayerRecord(address player) external view returns (uint256 bestScore, uint256 totalGames, uint256 lastPlayed, bool exists)",
+  "function getLeaderboard() external view returns (address[] memory players, uint256[] memory scores, uint256[] memory totalGames)",
+  "function RETRY_FEE() external view returns (uint256)",
+  "function STARTING_SCORE() external view returns (uint256)",
+  "function PENALTY_PER_GUESS() external view returns (uint256)",
+  "function MINIMUM_SCORE() external view returns (uint256)",
+  "event GameStarted(address indexed player, uint256 gameId)",
+  "event GuessMade(address indexed player, uint256 guess, string hint, uint256 newScore)",
+  "event GameCompleted(address indexed player, uint256 finalScore, uint256 totalGuesses)",
+  "event ScoreSubmitted(address indexed player, uint256 score)"
+];
+
+// Discord Binding Contract ABI (Username Only)
+export const DISCORD_ABI = [
+  "function registerDiscord(string calldata _discordUsername) external",
+  "function updateDiscordUsername(string calldata _newDiscordUsername) external",
+  "function getDiscordByWallet(address _wallet) external view returns (string memory discordUsername, bool isRegistered)",
+  "function getWalletByDiscordUsername(string calldata _discordUsername) external view returns (address wallet, bool exists)",
+  "function getGame2048LeaderboardWithDiscord() external view returns (address[] memory wallets, string[] memory discordUsernames, uint256[] memory scores, uint256[] memory timestamps)",
+  "function getMasterMindLeaderboardWithDiscord() external view returns (address[] memory wallets, string[] memory discordUsernames, uint256[] memory scores, uint256[] memory totalGames)",
+  "function getPlayerBasicProfile(address _wallet) external view returns (string memory discordUsername, uint256 registeredAt, bool isRegistered)",
+  "event ProfileRegistered(address indexed wallet, string discordUsername)",
+  "event ProfileUpdated(address indexed wallet, string newDiscordUsername)"
+];
+
 // Contract addresses (deployed on Gblend Testnet)
 const CONTRACT_ADDRESS = '0xe658d00F63Ccc52CF8EC831Dc18E2Db715510F35';
 const GAME2048_CONTRACT_ADDRESS = '0x30C80714647f16C39C1E2ab342629AD49cd42089'; // New contract with no-duplicate logic
+const MASTERMIND_CONTRACT_ADDRESS = '0xe78f318619833a5F44B087204ab7ae24687C0D20';
+export const DISCORD_CONTRACT_ADDRESS = '0x250860d3CcEb88833d2CE27629e54a34bD5006EC'; // New simplified contract
 
 export class Web3Service {
   constructor() {
@@ -56,6 +88,8 @@ export class Web3Service {
     this.signer = null;
     this.contract = null;
     this.game2048Contract = null;
+    this.masterMindContract = null;
+    this.discordContract = null;
     this.account = null;
     
     // Listen for network changes
@@ -209,6 +243,34 @@ export class Web3Service {
       return true;
     } catch (error) {
       console.error('Error initializing Game2048 contract:', error);
+      throw error;
+    }
+  }
+
+  async initializeMasterMindContract() {
+    try {
+      if (!this.provider || !this.signer) {
+        await this.connectWallet();
+      }
+      
+      this.masterMindContract = new ethers.Contract(MASTERMIND_CONTRACT_ADDRESS, MASTERMIND_ABI, this.signer);
+      return true;
+    } catch (error) {
+      console.error('Error initializing MasterMind contract:', error);
+      throw error;
+    }
+  }
+
+  async initializeDiscordContract() {
+    try {
+      if (!this.provider || !this.signer) {
+        await this.connectWallet();
+      }
+      
+      this.discordContract = new ethers.Contract(DISCORD_CONTRACT_ADDRESS, DISCORD_ABI, this.signer);
+      return true;
+    } catch (error) {
+      console.error('Error initializing Discord contract:', error);
       throw error;
     }
   }
