@@ -1,0 +1,301 @@
+.discord-binding {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.discord-binding h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.discord-binding h4 {
+  margin: 20px 0 10px 0;
+  font-size: 1.2rem;
+  color: #f0f0f0;
+}
+
+.discord-binding p {
+  text-align: center;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.status-badge.registered {
+  background: #28a745;
+  color: white;
+}
+
+.status-badge.unregistered {
+  background: #dc3545;
+  color: white;
+}
+
+/* Profile Info */
+.profile-info {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-details {
+  margin-bottom: 20px;
+}
+
+.profile-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.profile-item label {
+  font-weight: bold;
+  color: #f0f0f0;
+}
+
+.discord-id {
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.discord-username {
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.wallet-address {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #add8e6;
+}
+
+/* Form Styles */
+.register-form {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.description {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #f0f0f0;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1rem;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+/* Buttons */
+.register-btn,
+.update-btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.update-btn {
+  width: auto;
+  min-width: 120px;
+  padding: 12px 25px;
+  font-size: 0.95rem;
+  background: linear-gradient(135deg, #17a2b8, #138496);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+  transition: all 0.3s ease;
+}
+
+.update-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #148a99, #117a8b);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+}
+
+.register-btn:hover:not(:disabled),
+.update-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.register-btn:disabled,
+.update-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Update Section */
+.update-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 20px;
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.update-section h4 {
+  margin: 0 0 15px 0;
+  color: #ffd700;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 10px;
+}
+
+.input-group input {
+  flex: 1;
+  margin-bottom: 0;
+  padding: 12px 15px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #17a2b8;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 15px rgba(23, 162, 184, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .discord-binding {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  .discord-binding h3 {
+    font-size: 1.5rem;
+  }
+  
+  .profile-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .input-group {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .input-group input {
+    margin-bottom: 0;
+  }
+  
+  .update-btn {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.discord-binding {
+  animation: fadeIn 0.5s ease-out;
+}
