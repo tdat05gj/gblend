@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import WalletConnect from './components/WalletConnect';
 import PublicChat from './components/PublicChat';
 import PrivateChat from './components/PrivateChat';
@@ -6,26 +7,41 @@ import OnChainTransfer from './components/OnChainTransfer';
 import Game2048 from './components/Game2048';
 import MasterMind from './components/MasterMind';
 import DiscordBinding from './components/DiscordBinding';
+import FeedbackSystem from './components/FeedbackSystem';
 import { KeyStorageService } from './utils/encryption';
-import { Lock, Wallet, LogOut, Sun, Moon, Send, MessageSquare, Gamepad2, Brain, Link } from 'lucide-react';
+import { Lock, Wallet, LogOut, Sun, Moon, Send, MessageSquare, Gamepad2, Brain, Link, Star } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import './components/Game2048.css';
 
 function App() {
+  const navigate = useNavigate();
   const [account, setAccount] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
   const [userKeys, setUserKeys] = useState(null);
   const [activeTab, setActiveTab] = useState('public');
   const [userInfo, setUserInfo] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [showGamesDropdown, setShowGamesDropdown] = useState(false);
 
   useEffect(() => {
     // Apply theme to document
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.games-dropdown')) {
+        setShowGamesDropdown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
@@ -74,8 +90,12 @@ function App() {
       <div className="app" data-theme={theme}>
         <header className="app-header">
           <h1>
-            <MessageSquare size={32} />
-            Gblend DApp
+            <img 
+              src="/Fluent logo.png" 
+              alt="Fluent Logo" 
+              style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+            />
+            Gblend
           </h1>
           <p>Secure communication on Gblend Testnet</p>
           <button onClick={toggleTheme} className="theme-toggle">
@@ -110,14 +130,26 @@ function App() {
       <header className="app-header">
         <div className="header-left">
           <h1>
-            <MessageSquare size={32} />
-            Gblend DApp
+            <img 
+              src="/Fluent logo.png" 
+              alt="Fluent Logo" 
+              style={{ width: '32px', height: '32px', objectFit: 'contain' }}
+            />
+            Gblend
           </h1>
         </div>
         
         <div className="header-right">
           <button onClick={toggleTheme} className="theme-toggle">
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('discord')} 
+            className={`discord-button ${activeTab === 'discord' ? 'active' : ''}`}
+            title="Discord Binding"
+          >
+            <Link size={16} />
+            Discord
           </button>
           <div className="user-info">
             <Wallet size={16} />
@@ -141,54 +173,68 @@ function App() {
         </button>
         <button 
           className={`tab-button ${activeTab === 'private' ? 'active' : ''}`}
-          onClick={() => setActiveTab('private')}
+          onClick={() => navigate('/private-chat')}
         >
           <Lock size={18} />
           Private Chat
         </button>
         <button 
           className={`tab-button ${activeTab === 'transfer' ? 'active' : ''}`}
-          onClick={() => setActiveTab('transfer')}
+          onClick={() => navigate('/onchain-transfer')}
         >
           <Send size={18} />
           OnChain Transfer
         </button>
+        <div className="games-dropdown">
+          <button 
+            className={`tab-button ${(activeTab === 'game2048' || activeTab === 'mastermind') ? 'active' : ''}`}
+            onClick={() => setShowGamesDropdown(!showGamesDropdown)}
+          >
+            <Gamepad2 size={18} />
+            Games
+            <span className={`dropdown-arrow ${showGamesDropdown ? 'open' : ''}`}>▼</span>
+          </button>
+          {showGamesDropdown && (
+            <div className="dropdown-menu">
+              <button 
+                className="dropdown-item"
+                onClick={() => {
+                  navigate('/2048game');
+                  setShowGamesDropdown(false);
+                }}
+              >
+                <Gamepad2 size={16} />
+                2048 Game
+              </button>
+              <button 
+                className="dropdown-item"
+                onClick={() => {
+                  navigate('/mastermind');
+                  setShowGamesDropdown(false);
+                }}
+              >
+                <Brain size={16} />
+                Master Mind
+              </button>
+            </div>
+          )}
+        </div>
         <button 
-          className={`tab-button ${activeTab === 'game2048' ? 'active' : ''}`}
-          onClick={() => setActiveTab('game2048')}
+          className={`tab-button ${activeTab === 'feedback' ? 'active' : ''}`}
+          onClick={() => navigate('/feedback')}
         >
-          <Gamepad2 size={18} />
-          2048 Game
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'mastermind' ? 'active' : ''}`}
-          onClick={() => setActiveTab('mastermind')}
-        >
-          <Brain size={18} />
-          Master Mind
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'discord' ? 'active' : ''}`}
-          onClick={() => setActiveTab('discord')}
-        >
-          <Link size={18} />
-          Discord
+          <Star size={18} />
+          Feedback
         </button>
       </nav>
 
       <main className="main-content">
         {activeTab === 'public' ? (
           <PublicChat account={account} />
-        ) : activeTab === 'private' ? (
-          <PrivateChat account={account} userKeys={userKeys} />
-        ) : activeTab === 'transfer' ? (
-          <OnChainTransfer account={account} />
-        ) : activeTab === 'game2048' ? (
-          <Game2048 account={account} />
-        ) : activeTab === 'mastermind' ? (
-          <MasterMind account={account} />
-        ) : (
+        ) : activeTab === 'discord' ? (
           <DiscordBinding account={account} />
+        ) : (
+          <PublicChat account={account} /> // Default fallback
         )}
       </main>
 

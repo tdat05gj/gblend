@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    open: true
+    open: true,
+    headers: {
+      'Content-Security-Policy': "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:; object-src 'none';"
+    }
   },
   build: {
     outDir: 'dist',
@@ -24,5 +27,10 @@ export default defineConfig({
   },
   define: {
     global: 'globalThis',
+    'process.env': {}
   },
+  optimizeDeps: {
+    include: ['ethers', 'crypto-js'],
+    exclude: []
+  }
 })

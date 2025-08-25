@@ -18,7 +18,7 @@
   "author": "tdat05gj",
   "license": "MIT",
   "devDependencies": {
-    "@nomicfoundation/hardhat-verify": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.1",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "ethers": "^5.8.0",
     "hardhat": "^2.22.15"

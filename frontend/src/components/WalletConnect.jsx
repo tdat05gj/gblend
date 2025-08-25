@@ -34,7 +34,10 @@ const WalletConnect = ({ onWalletConnected, onUserRegistered }) => {
             const registered = await web3Service.isUserRegistered(account);
             setIsRegistered(registered);
             
-            onWalletConnected(account, registered);
+            // Call onWalletConnected only if it's a function
+            if (typeof onWalletConnected === 'function') {
+              onWalletConnected(account, registered);
+            }
           } catch (error) {
             console.error('Error initializing web3 on check connection:', error);
             // If initialization fails, user will need to connect manually
@@ -58,7 +61,10 @@ const WalletConnect = ({ onWalletConnected, onUserRegistered }) => {
       const registered = await web3Service.isUserRegistered(account);
       setIsRegistered(registered);
       
-      onWalletConnected(account, registered);
+      // Call onWalletConnected only if it's a function
+      if (typeof onWalletConnected === 'function') {
+        onWalletConnected(account, registered);
+      }
     } catch (error) {
       setError(error.message);
     } finally {
@@ -87,7 +93,10 @@ const WalletConnect = ({ onWalletConnected, onUserRegistered }) => {
       await web3Service.registerUser(keys.publicKey, nickname.trim());
       
       setIsRegistered(true);
-      onUserRegistered(account, nickname.trim(), keys);
+      // Call onUserRegistered only if it's a function
+      if (typeof onUserRegistered === 'function') {
+        onUserRegistered(account, nickname.trim(), keys);
+      }
     } catch (error) {
       setError(error.message || 'Failed to register user');
     } finally {
